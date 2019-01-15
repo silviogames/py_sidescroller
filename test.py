@@ -1,5 +1,7 @@
 from random import randint
 import pygame
+import utils
+import gamemap
 pygame.init()
 
 win = pygame.display.set_mode((500,500))
@@ -10,8 +12,11 @@ clock = pygame.time.Clock()
 global run
 run = True
 delta = 0
+color_black = (0,0,0)
 color_white = (255, 255, 255)
-color_red = (255, 20, 20)
+color_red = (220,20,60)
+color_brown = (205,133,63)
+color_green = (0,128,0)
 
 class gameobj:
     def __init__(self,x,y):
@@ -48,6 +53,13 @@ list_boxes = [b,c]
 list_text_surf = []
 list_text_rect = []
 
+tilemap = utils.create_array(10,10)
+for x in range(10):
+    for y in range(10):
+        tilemap[x][y] = randint(0,2)
+
+
+
 def handle_input():
     pressed = pygame.key.get_pressed()
     for event in pygame.event.get():
@@ -78,6 +90,10 @@ def update(dt):
             list_boxes.remove(b)
 
 def render():
+    for x in range(len(tilemap)):
+        for y in range(len(tilemap[0])):
+            pygame.draw.rect(win, gamemap.get_color(tilemap[x][y]),(x * 10, y * 10, 9,9))
+
     for b in list_boxes:
         b.render(win)
 
