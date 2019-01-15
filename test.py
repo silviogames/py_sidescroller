@@ -5,15 +5,13 @@ pygame.init()
 win = pygame.display.set_mode((500,500))
 pygame.display.set_caption("jump test")
 vec = pygame.math.Vector2
-x = 50
-y = 50
-width = 40
-height = 60
-vel = 5
+basic_font = pygame.font.Font(None, 20)
 clock = pygame.time.Clock()
 global run
 run = True
 delta = 0
+color_white = (255, 255, 255)
+color_red = (255, 20, 20)
 
 class gameobj:
     def __init__(self,x,y):
@@ -47,7 +45,11 @@ b = gameobj(10,10)
 c = gameobj(100,100)
 list_boxes = [b,c]
 
+list_text_surf = []
+list_text_rect = []
+
 def handle_input():
+    pressed = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return False
@@ -58,6 +60,17 @@ def handle_input():
                 return False 
     return True
 
+def create_text(message, font, color):
+    text_surf = font.render(message, True, color)
+    return text_surf, text_surf.get_rect()  
+            
+def draw_text(message,x,y, color, font):
+    text_surf, text_rect = create_text(message, font, color)
+    text_rect.x = x
+    text_rect.y = y
+    list_text_surf.append(text_surf)
+    list_text_rect.append(text_rect)
+
 def update(dt):
     for b in list_boxes:
         b.update(dt)
@@ -67,8 +80,16 @@ def update(dt):
 def render():
     for b in list_boxes:
         b.render(win)
-    for i in range(len(list_boxes)):
-       pygame.draw.rect(win, (255,255,255),(10 + (i * 3), 10, 2,5)) 
+
+    draw_text("balls in game " + str(len(list_boxes)),10, 10, color_white, basic_font)   
+       
+    if len(list_text_rect) != len(list_text_surf):
+        print("text list mismatch")
+    else:
+        for i in range(len(list_text_surf)):
+            win.blit(list_text_surf[i], list_text_rect[i])
+    list_text_rect.clear()
+    list_text_surf.clear()
 
 while handle_input():
     win.fill((20,20,20))
