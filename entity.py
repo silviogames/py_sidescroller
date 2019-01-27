@@ -1,35 +1,30 @@
 # this file handles game entites like the player, enemies or items
 from random import randint
 import pygame
+import gamemap
 vec = pygame.math.Vector2
 
 class entity:
-    def __init__(self,x,y):
+    def __init__(self,x,y,world):
         self.pos = vec(x,y) 
         self.dead = False
+        self.world = world
         self.vel = vec(randint(-100, 100),randint(-100, 100));
         
     def render(self,surf):
         pass
     
     def collision(self):
-        # wall collision
-        collision = False
-        if self.pos.x < 0 or self.pos.x > 500:
-            self.vel.x = -self.vel.x
-            collision = True
-        if self.pos.y < 0 or self.pos.y > 500:
-            self.vel.y = -self.vel.y
-            collision = True 
-        return collision
+        # tilemap box collision
+        return self.world.collision(self.pos.x, self.pos.y) 
     
     def update(self,dt):
         self.pos = self.pos + self.vel * dt; 
         
 
 class Ball(entity):
-    def __init__(self,x,y,radius):
-        entity.__init__(self,x,y)
+    def __init__(self,x,y,radius,world):
+        entity.__init__(self,x,y,world)
         self.radius = radius
         self.color = (randint(0,255),randint(0,255),randint(0,255))
 
@@ -45,8 +40,8 @@ class Ball(entity):
         pygame.draw.circle(surf, self.color, (int(self.pos.x),int( self.pos.y)), self.radius)
 
 class Box(entity):
-    def __init__(self,x,y):
-        entity.__init__(self,x,y)
+    def __init__(self,x,y,world):
+        entity.__init__(self,x,y,world)
         self.color = (randint(0,255),randint(0,255),randint(0,255))
         self.width = 10
         self.height = 10

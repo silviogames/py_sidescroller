@@ -4,20 +4,22 @@ import utils
 import gamemap
 import color
 import entity
+vec = pygame.math.Vector2
 pygame.init()
 
 win = pygame.display.set_mode((500,500))
 pygame.display.set_caption("jump test")
-vec = pygame.math.Vector2
 basic_font = pygame.font.Font(None, 20)
 clock = pygame.time.Clock()
 global run
 run = True
 delta = 0
 
-game_world = gamemap.world(20,20,15)
+#GAME WORLD INIT#
+game_world = gamemap.world(15,15,30)
 game_world.generate()
-game_world.add_entity(entity.Ball(10,10,15))
+game_world.add_entity(entity.Ball(10,10,15,game_world))
+#GAME WORLD INIT#
 
 list_text_surf = []
 list_text_rect = []
@@ -29,7 +31,7 @@ def handle_input():
             return False
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE:
-                game_world.add_entity(entity.Ball(randint(0,500), randint(0,500),20))
+                game_world.add_entity(entity.Ball(randint(0,500), randint(0,500),20,game_world))
             if event.key == pygame.K_ESCAPE:
                 return False 
     return True
@@ -70,4 +72,3 @@ while handle_input():
     update(float(dt) / 1000)
 pygame.quit()
 print("game closed")
-

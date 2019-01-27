@@ -11,13 +11,22 @@ class tile:
         self.collision = collision
         self.tile_id = tile_id
 
-tile_grass = tile(color.green, True, 0)
-tile_dirt = tile(color.brown, True, 1)
-tile_lava= tile(color.red,False , 2)
+tile_air = tile(color.black, False, 0)
+tile_grass = tile(color.green, True, 1)
+tile_dirt = tile(color.brown, True, 2)
+tile_lava= tile(color.red,False , 3)
 list_tiles = []
+
+list_tiles.append(tile_air)
 list_tiles.append(tile_dirt)
 list_tiles.append(tile_grass)
 list_tiles.append(tile_lava)
+
+#fast lookup table for collision
+tile_collision = []
+for tile in list_tiles:
+    tile_collision.append(tile.collision)
+
 
 def get_color(index):
     # get color from tiles or default if out of range
@@ -38,7 +47,7 @@ class world:
         #(re)generate content of this map
         for x in range(self.width):
             for y in range(self.height):
-                self.content[x][y] = randint(0,2)
+                self.content[x][y] = utils.random_range((0,15),(1,3),(2,1),(3,1)) 
 
     def add_entity(self, new_entity):
         if isinstance(new_entity, entity.entity):
@@ -55,7 +64,22 @@ class world:
         #render entities
         for e in self.entities:
             e.render(surf)
-    
+
+    def collision(self,x,y):
+        #returns true if collision 
+        tilex = int( x / self.tile_size)
+        tiley =int( y / self.tile_size)
+        if tilex < 0 or tilex >= self.width or tiley < 0 or tiley >= self.height:
+            return False
+        else:
+            return tile_collision[self.content[tilex][tiley]]
+
+    def get_tile(self,tilex,tiley):
+        if tilex < 0 or tilex >= self.width or tiley < 0 or tiley >= self.height:
+            return None
+        else:
+            return self.content[tilex][tiley]
+
     def update(self,dt):
          for e in self.entities:
              e.update(dt)
@@ -63,4 +87,4 @@ class world:
     # remove objects after all objects updated
          for e in self.entities:
              if e.dead == True:
-                 self.entites.remove(e)
+                 self.entities.remove(e)
